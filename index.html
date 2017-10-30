@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>Assignment 3</title>
+
+	<meta name="viewport" content="initial-scale=1.0">
+		<meta charset="utf-8">
+		<style>
+			#map {
+				height: 100%;
+			}
+			html, body {
+				height: 70%;
+				margin: 0;
+				padding: 0;
+			}
+	</style>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.concisecss.com/concise-utils/concise-utils.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+	<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+	<div id="map"></div>
+
+	<!-- Scripts -->
+	<script>
+		var latitude;
+		var longitude;
+
+		var map;
+		var marker;
+		
+		/* initialize Map */
+		function initMap() {
+			var currentPosition;
+			var geocoder = new google.maps.Geocoder;
+			var infowindow = new google.maps.InfoWindow;
+
+			map = new google.maps.Map(document.getElementById('map'), {
+				center: {lat: 34.020638, lng: -118.288789},
+				zoom: 8
+			});
+
+			function success(position) {
+				latitude  = position.coords.latitude;
+				longitude = position.coords.longitude;
+
+				currentPosition = new google.maps.LatLng(latitude, longitude);
+
+				geocoder.geocode({'location': currentPosition}, function(results, status) {
+
+					var icon = 'https://maps.google.com/mapfiles/kml/shapes/info-i_maps.png';
+
+					if (status === 'OK') {
+						if (results[0]) {
+							map.setZoom(11);
+							marker = new google.maps.Marker({
+								position: currentPosition,
+								map: map,
+								animation: google.maps.Animation.DROP,
+								icon: icon
+							});
+							
+							infowindow.setContent(results[0].formatted_address);
+							infowindow.open(map, marker);
+						} else {
+							window.alert('No results found');
+						}
+					} else {
+						window.alert('Geocoder failed due to: ' + status);
+					}
+				});
+			}
+			
+
+			function error() {
+			}
+
+			navigator.geolocation.getCurrentPosition(success, error);
+
+			var zoom = new google.maps.LatLngBounds();
+		}
+	</script>
+
+	<script src="jquery-3.2.1.js"></script>
+	<script src="handlebars-v4.0.10.js"></script>
+	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBIm-jCYKZITHMltd3f-Iy8Na-hjaqPuYY&callback=initMap"
+	type="text/javascript"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+	<script src="main.js"></script>
+</body>
+</html>
